@@ -664,6 +664,10 @@ function phpbb2drupal_import_topics() {
 
     $teaser = node_teaser($topic->post_text);
 
+    if ($topic->post_edit_time < $topic->topic_time) {
+      $topic->post_edit_time = $topic->topic_time;
+    }
+
     //construct the node
     $node = array(
       'type' => 'forum',
@@ -842,6 +846,10 @@ function phpbb2drupal_import_polls() {
     }
     else { // UNLOCKED & WATCH NOTIFIED
       $comment = 2;  // read-write
+    }
+
+    if ($topic->post_edit_time < $topic->topic_time) {
+      $topic->post_edit_time = $topic->topic_time;
     }
 
     //construct the node
