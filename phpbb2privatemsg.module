@@ -126,7 +126,7 @@ function phpbb2privatemsg_import() {
       $pm->privmsgs_subject = _phpbb2drupal_text_encode($pm->privmsgs_subject);
       
 	    //save message if no duplicates
-	    $dupe = db_result(db_query('SELECT COUNT(*) FROM {pm_message} WHERE body = %s AND author = %d', $pm->privmsgs_text, $from));
+	    $dupe = db_result(db_query('SELECT COUNT(*) FROM {pm_index} WHERE recipient = %d AND (author = %d AND timestamp = %d)', $to, $from, $pm->privmsgs_date));
 	    if (!($dupe >0)) {
 
         // Borrow and adapt  code from patch to upgrade privatemsg module to Drupal 6 (http://drupal.org/node/202348#comment-700061)
@@ -141,10 +141,10 @@ function phpbb2privatemsg_import() {
           'format' => $format,
         );
         $result = drupal_write_record('pm_message', $message);
-        $message_id = db_last_insert_id('pm_message', 'message_id');
-        $message['message_id'] = $message_id;
+        $message_id = db_last_insert_id('pm_message', 'mid');
+        $message['mid'] = $message_id;
     
-        //thread ID is the same as the message_id if its the first message in the thread
+        //thread ID is the same as the mid if its the first message in the thread
         if (!isset($message['thread_id'])) {
           $message['thread_id'] = $message_id;
         }
