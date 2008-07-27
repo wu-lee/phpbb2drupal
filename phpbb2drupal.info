@@ -9,4 +9,5 @@ dependencies[] = poll
 dependencies[] = profile
 dependencies[] = taxonomy
 dependencies[] = user
+dependencies[] = bbcode
 package = phpBB to Drupal
