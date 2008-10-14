@@ -125,33 +125,36 @@ function phpbb2privatemsg_import() {
       $pm->privmsgs_text = _phpbb2drupal_replace_links($pm->privmsgs_text);
       $pm->privmsgs_subject = _phpbb2drupal_text_encode($pm->privmsgs_subject);
       
-	    //save message if no duplicates
-	    $dupe = db_result(db_query('SELECT COUNT(*) FROM {pm_index} WHERE recipient = %d AND (author = %d AND timestamp = %d)', $to, $from, $pm->privmsgs_date));
-	    if (!($dupe >0)) {
-
         // Borrow and adapt  code from patch to upgrade privatemsg module to Drupal 6 (http://drupal.org/node/202348#comment-700061)
-        $message = array(
-          'author' => $from,
-          'uid' => $to,
-          'subject' => substr($pm->privmsgs_subject, 0, 64),
-          'body' => $pm->privmsgs_text,
-          'timestamp' => $pm->privmsgs_date,
-          'new' => $pm->newmsg,
-          'hostname' => substr($pm->privmsgs_ip, 0, 255),
-          'format' => $format,
-        );
+      $message = array(
+        'author' => $from,
+        'uid' => $to,
+        'subject' => substr($pm->privmsgs_subject, 0, 64),
+        'body' => $pm->privmsgs_text,
+        'timestamp' => $pm->privmsgs_date,
+        'new' => $pm->newmsg,
+        'hostname' => substr($pm->privmsgs_ip, 0, 255),
+        'format' => $format,
+      );
+
+	    //save message if no duplicates
+	    $dupe = db_result(db_query('SELECT * FROM {pm_message} WHERE author = %d AND timestamp = %d', $message['author'], $message['timestamp']));
+	    if ($dupe) {
+        $message['mid'] = $dupe['mid'];
+      }
+      else {
         $result = drupal_write_record('pm_message', $message);
         $message_id = db_last_insert_id('pm_message', 'mid');
         $message['mid'] = $message_id;
-    
-        //thread ID is the same as the mid if its the first message in the thread
-        if (!isset($message['thread_id'])) {
-          $message['thread_id'] = $message_id;
-        }
-        $result = drupal_write_record('pm_index', $message);
-        $message['uid'] = $message['author'];
-        $result = drupal_write_record('pm_index', $message);
-	    }
+      }
+  
+      //thread ID is the same as the mid if its the first message in the thread
+      if (!isset($message['thread_id'])) {
+        $message['thread_id'] = $message_id;
+      }
+      $result = drupal_write_record('pm_index', $message);
+      $message['uid'] = $from;
+      $result = drupal_write_record('pm_index', $message);
     }
   }
   variable_set('phpbb2privatemsg_import_successful', 1);
