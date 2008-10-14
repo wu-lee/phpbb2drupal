@@ -132,7 +132,7 @@ function phpbb2privatemsg_import() {
         // Borrow and adapt  code from patch to upgrade privatemsg module to Drupal 6 (http://drupal.org/node/202348#comment-700061)
         $message = array(
           'author' => $from,
-          'recipient' => $to,
+          'uid' => $to,
           'subject' => substr($pm->privmsgs_subject, 0, 64),
           'body' => $pm->privmsgs_text,
           'timestamp' => $pm->privmsgs_date,
@@ -148,6 +148,8 @@ function phpbb2privatemsg_import() {
         if (!isset($message['thread_id'])) {
           $message['thread_id'] = $message_id;
         }
+        $result = drupal_write_record('pm_index', $message);
+        $message['uid'] = $message['author'];
         $result = drupal_write_record('pm_index', $message);
 	    }
     }
