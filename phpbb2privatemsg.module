@@ -132,7 +132,7 @@ function phpbb2privatemsg_import() {
         'subject' => substr($pm->privmsgs_subject, 0, 64),
         'body' => $pm->privmsgs_text,
         'timestamp' => $pm->privmsgs_date,
-        'new' => $pm->newmsg,
+        'is_new' => $pm->newmsg,
         'hostname' => substr($pm->privmsgs_ip, 0, 255),
         'format' => $format,
       );
