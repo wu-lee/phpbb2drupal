@@ -138,7 +138,7 @@ function phpbb2privatemsg_import() {
       );
 
 	    //save message if no duplicates
-	    $dupe = db_result(db_query('SELECT COUNT(*) FROM {pm_message}, {pm_index}  WHERE author = %d AND timestamp = %d AND pm.mid = pmi.mid AND pmi.uid = %d', $message['author'], $message['timestamp'], $message['uid']));
+	    $dupe = db_result(db_query('SELECT COUNT(*) FROM {pm_message} pm, {pm_index} pmi  WHERE author = %d AND timestamp = %d AND pm.mid = pmi.mid AND pmi.uid = %d', $message['author'], $message['timestamp'], $message['uid']));
 	    if ($dupe <> 0) {
         $message['mid'] = $dupe['mid'];
       }
