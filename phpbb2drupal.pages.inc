@@ -50,7 +50,7 @@ function phpbb2drupal_admin_settings() {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  $output = '<p>'. t('Select which <a href="@link">input format</a> should the imported messages be set:', array('@link' => url('admin/filters'))) .'</p>';
+  $output = '<p>'. t('Select which <a href="@link">input format</a> should the imported messages be set:', array('@link' => url('admin/settings/filters'))) .'</p>';
   $form['input']['intro'] = array('#value' => $output);
   $output = '';
 
@@ -99,8 +99,8 @@ function phpbb2drupal_admin_settings() {
   $output = '';
   $result7 = _phpbb2drupal_check_module('bbcode');
   $output .= $result7['html'];
-  $link_input_format_enable = url('admin/filters/'. $input_format);
-  $link_input_format_configure = url('admin/filters/'. $input_format .'/configure');
+  $link_input_format_enable = url('admin/settings/filters/'. $input_format);
+  $link_input_format_configure = url('admin/settings/filters/'. $input_format .'/configure');
   if (variable_get('phpbb2drupal_bbcode', 0)) { 
     if ($result7['result'] == 0) {
       $ready_for_migration = 0;
@@ -116,7 +116,7 @@ function phpbb2drupal_admin_settings() {
       $form['bbcode']['#collapsed']= FALSE;
       $output .= '<p class="marker">'. t('You need to <a href="@formatenable">enable bbcode in the selected input format</a> <a href="@formatconfigure">THEN click on configure to see bbcode options</a>', array('@formatenable' => $link_input_format_enable, '@formatconfigure' => $link_input_format_configure)) .'</p>';
     }
-    $output .= '<p>'. t('For best results, <a href="@bbcodeconfig">all four BBcode configure options should be disabled</a>.', array('@bbcodeconfig' => url('admin/filters/'. $input_format .'/configure'))) .'</p>';
+    $output .= '<p>'. t('For best results, <a href="@bbcodeconfig">all four BBcode configure options should be disabled</a>.', array('@bbcodeconfig' => url('admin/settings/filters/'. $input_format .'/configure'))) .'</p>';
     
   }
   else {
