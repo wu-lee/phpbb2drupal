@@ -119,7 +119,9 @@ function phpbb2privatemsg_import() {
     // don't import private messages from or to users who are not imported.
     if ($from and $to) {
       // remove the bbcode_uid from post_text
-      $pm->privmsgs_text = preg_replace("/:$pm->privmsgs_bbcode_uid/", '', $pm->privmsgs_text);
+      if(!empty($pm->privmsgs_bbcode_uid)) {
+        $pm->privmsgs_text = preg_replace("/:$pm->privmsgs_bbcode_uid/", '', $pm->privmsgs_text);
+      }
       $pm->privmsgs_text = _phpbb2drupal_strip_bbcode($pm->privmsgs_text);
       $pm->privmsgs_text = _phpbb2drupal_text_encode($pm->privmsgs_text);
       $pm->privmsgs_text = _phpbb2drupal_replace_links($pm->privmsgs_text);
