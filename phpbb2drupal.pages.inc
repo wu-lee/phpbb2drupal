@@ -4,7 +4,7 @@
 /**
  * Callback admin/settings/phpbb2drupal
  */
-function phpbb2drupal_admin_settings() {
+function phpbb2drupal_admin_settings($form, &$form_state) {
   global $conf;
   global $db_url;
   $stage = variable_get('phpbb2drupal_config_stage', 0);
@@ -136,7 +136,7 @@ function phpbb2drupal_admin_settings() {
     '#collapsed' => TRUE,
   );
   // User to map admin user too
-  $drupal_admin = user_load(array('uid' => 1));
+  $drupal_admin = user_load(1);
   $form['users']['phpbb2drupal_admin_user'] = array(
     '#title' => t('User to map phpBB admin'),
     '#type' => 'textfield',
@@ -169,7 +169,7 @@ function phpbb2drupal_admin_settings() {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
-  $output = '<p>' . t('Select which <a href="@link">input format</a> should the imported messages be set:', array('@link' => url('admin/settings/filters'))) . '</p>';
+  $output = '<p>' . t('Select which <a href="@link">input format</a> should the imported messages be set:', array('@link' => url('admin/config/content/formats'))) . '</p>';
   $form['input']['intro'] = array('#value' => $output);
   $output = '';
 
@@ -218,8 +218,8 @@ function phpbb2drupal_admin_settings() {
   $output = '';
   $result7 = _phpbb2drupal_check_module('bbcode');
   $output .= $result7['html'];
-  $link_input_format_enable = url('admin/settings/filters/' . $input_format);
-  $link_input_format_configure = url('admin/settings/filters/' . $input_format . '/configure');
+  $link_input_format_enable = url('admin/config/content/formats/' . $input_format);
+  $link_input_format_configure = url('admin/config/content/formats/' . $input_format . '/configure');
   if (variable_get('phpbb2drupal_bbcode', 0)) {
     if ($result7['result'] == 0) {
       $ready_for_migration = 0;
@@ -230,12 +230,12 @@ function phpbb2drupal_admin_settings() {
       $output .= '</span></p>';
     }
     $sql = 'SELECT COUNT(*) FROM {filters} WHERE module = \'bbcode\' AND format = %d';
-    $result = db_query($sql, $input_format);
-    if (!db_result($result)) {
+    $result = db_query('SELECT COUNT(*) FROM {filters} WHERE module = :module AND format = :format', array(':module' => ':format' => $input_format,));
+    if (!$result->fetchField()) {
       $form['bbcode']['#collapsed'] = FALSE;
       $output .= '<p class="marker">' . t('You need to <a href="@formatenable">enable bbcode in the selected input format</a> <a href="@formatconfigure">THEN click on configure to see bbcode options</a>', array('@formatenable' => $link_input_format_enable, '@formatconfigure' => $link_input_format_configure)) . '</p>';
     }
-    $output .= '<p>' . t('For best results, <a href="@bbcodeconfig">all four BBcode configure options should be disabled</a>.', array('@bbcodeconfig' => url('admin/settings/filters/' . $input_format . '/configure'))) . '</p>';
+    $output .= '<p>' . t('For best results, <a href="@bbcodeconfig">all four BBcode configure options should be disabled</a>.', array('@bbcodeconfig' => url('admin/config/content/formats/' . $input_format . '/configure'))) . '</p>';
 
   }
   else {
@@ -272,7 +272,7 @@ function phpbb2drupal_admin_settings() {
       $ready_for_migration = 0;
       $form['attachments']['#collapsed'] = FALSE;
       $output .= '<span class="marker">';
-      $output .= t('The comment_upload.module is not enabled. You can go to the <a href="http://drupal.org/node/37197" target="_blank">module Home Page</a> and download it. Then go to <a href="@adminmodules">admin/build/modules</a> to enable the module.', array('@adminmodules' => url('admin/build/modules')));
+      $output .= t('The comment_upload.module is not enabled. You can go to the <a href="http://drupal.org/node/37197" target="_blank">module Home Page</a> and download it. Then go to <a href="@adminmodules">admin/build/modules</a> to enable the module.', array('@adminmodules' => url('admin/modules')));
       $output .= '</span>';
       $form['attachments']['result'] = array('#value' => $output);
     }
@@ -311,13 +311,13 @@ function phpbb2drupal_postconfiguration() {
   $output .= '<h2>' . t('User Settings') . '</h2>';
   $output .= '<p>' . t('Make sure your <a href="@usersettings">user settings</a> are correct. here you can enable or disable signature. In order to activate avatar/picture support, you need to enable pictures on this page and also:', array('@usersettings' => url('admin/user/settings'))) . '</p>';
   $output .= '<ul>';
-  $output .= '<li>' . t('Tick the checkboxes to allow "User pictures in posts" and/or "User pictures in comments" on the <a href="@themeconfig">themes configuration</a> page.', array('@themeconfig' => url('admin/build/themes/settings'))) . '</li>';
+  $output .= '<li>' . t('Tick the checkboxes to allow "User pictures in posts" and/or "User pictures in comments" on the <a href="@themeconfig">themes configuration</a> page.', array('@themeconfig' => url('admin/appearance/settings'))) . '</li>';
   $output .= '<li>' . t('Manually copy the avatars from the phpbb2/images/avatars/ directory to the @files directory.', array('@files' => file_directory_path() . '/pictures')) . '</li>';
   $output .= '</ul>';
   // Forum Set up
   $output .= '<h2>' . t('Forum Settings') . '</h2>';
   $output .= '<p>' . t('If you imported polls, you need to allow polls to show in the forums. On <a href="@forumvocab">this page</a> tick the checkbox next to the "polls" content type to allow polls to display in forums. Addidtionally check any additional content types you want to allow in the forums.',
-      array('@forumvocab' => url('admin/content/taxonomy/edit/vocabulary/' . variable_get('forum_nav_vocabulary', 0)))) . '</p>';
+      array('@forumvocab' => url('admin/structure/taxonomy/edit/vocabulary/' . variable_get('forum_nav_vocabulary', 0)))) . '</p>';
   $output .= '<p>' . t('If need be, set up the private forums as explained in the <a href="http://drupal.org/node/58969" target="_blank">documentation</a>.') . '</p>';
 
   // Redirection from old URL:
@@ -349,7 +349,7 @@ function phpbb2drupal_main() {
   $output .= t('phpass.module by default changes hashing for all users from md5 to phpass. If you do not want this, please select md5 as the password hash method on the <a href="@phpass">User Settings page</a>. This will not affect user import from phpbb as this module ignores that page.', array('@phpass' => url('admin/user/settings')));
   $output .= '</li>';
   $output .= '<li>';
-  $output .= l(t('Configure the migration'), 'admin/settings/phpbb2drupal');
+  $output .= l(t('Configure the migration'), 'admin/config/phpbb2drupal');
   $output .= '</li>';
   $output .= '<li>';
   $output .= l(t('Execute the migration'), 'admin/phpbb2drupal/migrate');
@@ -364,7 +364,7 @@ function phpbb2drupal_main() {
   $output .= t('<a href="@cleanuplink">Cleanup</a> (Accessing this link will delete all the saved phpbb2drupal settings: click only when you\'re done with all the above.)', array('@cleanuplink' => url('admin/phpbb2drupal/cleanup')));
   $output .= '</li>';
   $output .= '<li>';
-  $output .= t('Enable the phpBB_Redirect module for seamless redirection from the old forums to the new. This module requires <a href="@cleanurls">clean urls</a> to be active.', array('@cleanurls' => url('admin/settings/clean-urls')));
+  $output .= t('Enable the phpBB_Redirect module for seamless redirection from the old forums to the new. This module requires <a href="@cleanurls">clean urls</a> to be active.', array('@cleanurls' => url('admin/config/search/clean-urls')));
   $output .= '</li>';
   $output .= '<li>';
   $output .= t('If you decide to use the phpBB_Redirect module, do NOT uninstall phpbb2drupal - This will delete tables necessary for redirection. You CAN deactivate the module safely.');
