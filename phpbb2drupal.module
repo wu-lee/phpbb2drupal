@@ -11,7 +11,7 @@ function phpbb2drupal_menu() {
     'title' => 'phpBB to Drupal',
     'access callback' => 'user_access',
     'access arguments' => array('migrate phpBB'),
-    'page callback' => 'phpbb2drupal_main', 
+    'page callback' => 'phpbb2drupal_main',
     'file' => 'phpbb2drupal.pages.inc',
     'type' => MENU_NORMAL_ITEM,
   );
@@ -19,7 +19,7 @@ function phpbb2drupal_menu() {
     'title' => 'Post Migration Configuration',
     'access callback' => 'user_access',
     'access arguments' => array('migrate phpBB'),
-    'page callback' => 'phpbb2drupal_postconfiguration', 
+    'page callback' => 'phpbb2drupal_postconfiguration',
     'file' => 'phpbb2drupal.pages.inc',
     'type' => MENU_NORMAL_ITEM,
   );
@@ -27,21 +27,21 @@ function phpbb2drupal_menu() {
     'title' => 'Cleanup',
     'access callback' => 'user_access',
     'access arguments' => array('migrate phpBB'),
-    'page callback' => 'phpbb2drupal_cleanup', 
+    'page callback' => 'phpbb2drupal_cleanup',
     'type' => MENU_CALLBACK,
   );
   $items['admin/phpbb2drupal/migrate'] = array(
     'title' => 'Execute Migration',
     'access callback' => 'user_access',
     'access arguments' => array('migrate phpBB'),
-    'page callback' => 'phpbb2drupal_migrate', 
+    'page callback' => 'phpbb2drupal_migrate',
     'type' => MENU_CALLBACK,
   );
   $items['admin/phpbb2drupal/reset'] = array(
     'title' => 'Reset phpBB2 database URL',
     'access callback' => 'user_access',
     'access arguments' => array('migrate phpBB'),
-    'page callback' => 'phpbb2drupal_reset', 
+    'page callback' => 'phpbb2drupal_reset',
     'type' => MENU_CALLBACK,
   );
   $items['admin/settings/phpbb2drupal'] = array(
@@ -69,15 +69,15 @@ function phpbb2drupal_reset() {
   global $db_url;
   variable_set('phpbb2drupal_db_url', $db_url);
   variable_set('phpbb2drupal_ready', 0);
-  return '<p>'. t('The phpBB2 database URL has been reset. You may now <a href="@configlink">go back to the configuration page</a>.',
-      array('@configlink' => url('admin/settings/phpbb2drupal'))) .'</p>';
+  return '<p>' . t('The phpBB2 database URL has been reset. You may now <a href="@configlink">go back to the configuration page</a>.',
+      array('@configlink' => url('admin/settings/phpbb2drupal'))) . '</p>';
 }
 
 /**
  * Callback admin/phpbb2drupal/cleanup
  */
 function phpbb2drupal_cleanup() {
-  return phpbb2drupal_import_cleanup() .'<p>'. t('Drupal database cleaned.') .'</p>';
+  return phpbb2drupal_import_cleanup() . '<p>' . t('Drupal database cleaned.') . '</p>';
 }
 
 /**
@@ -90,13 +90,13 @@ function phpbb2drupal_cleanup() {
  * fails, the process will die() which is a bit too much since we only
  * want to test. Therefore, the test part of the code is not used, now.
  */
-function _phpbb2drupal_db_connect($test= 0) {
+function _phpbb2drupal_db_connect($test = 0) {
   global $db_url;
   $same = variable_get('phpbb2drupal_same_db', 1);
   if (!$same) {
     $db_url2['phpbb'] = variable_get('phpbb2drupal_db_url', $db_url);
     $db_url2['default'] = $db_url;
-    $GLOBALS['db_url'] =& $db_url2;
+    $GLOBALS['db_url'] = &$db_url2;
     if ($test) {
       if (!db_connect($db_url2['phpbb'])) {
         return 0;
@@ -104,12 +104,12 @@ function _phpbb2drupal_db_connect($test= 0) {
     }
   }
   return 1;
-  
+
 }
 
 /**
  * Check if the module is enabled.
- * 
+ *
  * @return array
  *    $out['html'] = formatted html.
  *    $out['result'] = boolean.
@@ -119,10 +119,10 @@ function _phpbb2drupal_check_module($module) {
   $result = module_exists($module);
   $out['result'] = $result;
   if ($result == 1) {
-    $out['html'] .= '<li>'. t('Module %module is enabled. OK!', array('%module' => $module)) .'</li>';
+    $out['html'] .= '<li>' . t('Module %module is enabled. OK!', array('%module' => $module)) . '</li>';
   }
   else {
-    $out['html'] .= '<li><span class="marker">'. t('Module %module is disabled.', array('%module' => $module)) .'</span></li>';
+    $out['html'] .= '<li><span class="marker">' . t('Module %module is disabled.', array('%module' => $module)) . '</span></li>';
   }
   $out['html'] .= '</ul>';
   return $out;
@@ -130,37 +130,37 @@ function _phpbb2drupal_check_module($module) {
 
 /**
  * Check if the sql tables are installed.
- * 
+ *
  * @return array
  *   $out['html'] = formatted html.
  *   $out['result'] = boolean.
  */
-function _phpbb2drupal_check_tables( $tables = array(), $db = 'default' , $prefix = 1) {
+function _phpbb2drupal_check_tables( $tables = array(), $db = 'default', $prefix = 1) {
   _phpbb2drupal_db_connect();
 
   $out['html'] = '<ul>';
-  $out['result']= 1;
+  $out['result'] = 1;
   foreach ($tables as $table) {
     if ($prefix) {
-      $table = db_prefix_tables('{'. $table .'}');
-    }  
+      $table = db_prefix_tables('{' . $table . '}');
+    }
 
     db_set_active($db);
     if ($GLOBALS['db_type'] == 'pgsql') {
       // adapt from db_table_exists in database.pgsql.inc
       $result = (bool) db_result(db_query("SELECT COUNT(*) FROM pg_class WHERE relname = '%s'", $table));
-	}
-	else {
+    }
+    else {
       // adapt from db_table_exists in database.mysql.inc
       $result = (bool) db_fetch_object(db_query("SHOW TABLES LIKE '%s'", $table));
     }
     db_set_active('default');
     if ($result) {
-      $out['html'] .= '<li>'. t('Table %table: OK!', array('%table' => $table)) .'</li>';
+      $out['html'] .= '<li>' . t('Table %table: OK!', array('%table' => $table)) . '</li>';
     }
     else {
-      $out['html'] .= '<li><span class="marker">'. t('Table <strong>%table</strong> does not exist!', array('%table' => $table)) .'</span></li>';
-      $out['result']= 0;
+      $out['html'] .= '<li><span class="marker">' . t('Table <strong>%table</strong> does not exist!', array('%table' => $table)) . '</span></li>';
+      $out['result'] = 0;
     }
   }
   $out['html'] .= '</ul>';
@@ -171,7 +171,7 @@ function _phpbb2drupal_check_tables( $tables = array(), $db = 'default' , $prefi
 
 function phpbb2drupal_migrate() {
   if (!variable_get('phpbb2drupal_ready', 0)) {
-    return '<p>'. t('You cannot migrate the data now. Please <a href="@settings">complete the setup first</a>', array('@settings' => url('admin/settings/phpbb2drupal'))) .'</p>';
+    return '<p>' . t('You cannot migrate the data now. Please <a href="@settings">complete the setup first</a>', array('@settings' => url('admin/settings/phpbb2drupal'))) . '</p>';
   }
 
   $output = 'Phpbb 2 Drupal Migration Form';
@@ -180,7 +180,7 @@ function phpbb2drupal_migrate() {
 }
 
 function phpbb2drupal_migrate_form() {
-  _phpbb2drupal_db_connect() ;
+  _phpbb2drupal_db_connect();
   // Causes problems with form api redirect
   //ini_set('display_errors', TRUE);
 
@@ -188,7 +188,7 @@ function phpbb2drupal_migrate_form() {
   if (!ini_get('safe_mode')) {
     set_time_limit(variable_get('phpbb2drupal_time_limit', 0));
   }
-  
+
   $PHPBB2DRUPAL_FUNCTIONS = array(
     'users' => t('Import Users'),
     'categories' => t('Import Categories'),
@@ -233,7 +233,7 @@ function phpbb2drupal_migrate_form_submit($form, $form_state) {
       }
       break;
 
-    case 'topics':      
+    case 'topics':
       phpbb2drupal_import_topics();
       if (!variable_get('phpbb2drupal_import_topic_successful', 0)) {
         $_SESSION['phpbb2drupal_selected'] = 'topics';
@@ -242,7 +242,7 @@ function phpbb2drupal_migrate_form_submit($form, $form_state) {
         $_SESSION['phpbb2drupal_selected'] = 'posts';
       }
       break;
-      
+
     case 'posts':
       phpbb2drupal_import_posts();
       if (!variable_get('phpbb2drupal_import_post_successful', 0)) {
@@ -260,7 +260,7 @@ function phpbb2drupal_migrate_form_submit($form, $form_state) {
       }
       else {
         drupal_set_message('Congratulations.  Import Finished');
-        drupal_set_message('Please visit the '. l('Post migration configuration', 'admin/phpbb2drupal/postconfiguration') .' page');
+        drupal_set_message('Please visit the ' . l('Post migration configuration', 'admin/phpbb2drupal/postconfiguration') . ' page');
         unset($_SESSION['phpbb2drupal_selected']);
       }
       break;
@@ -280,7 +280,7 @@ function phpbb2drupal_import_users() {
   if (variable_get('phpbb2drupal_import_user_successful', 0)) {
     drupal_set_message(t('Users already imported successfully'));
     return;
-  }  
+  }
 
   if (variable_get('phpbb2drupal_import_user_started', 0) == 0) {
     // create temporary tables
@@ -289,25 +289,25 @@ function phpbb2drupal_import_users() {
     // create profile fields for icq, aim, msn...etc
     $querybase = 'INSERT INTO {profile_fields} (title, name, explanation, category, page, type, weight, required, register, visibility, options) VALUES ';
 
-    $query = $querybase ."('YIM', 'user_yim', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
+    $query = $querybase . "('YIM', 'user_yim', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
     db_query($query);
 
-    $query = $querybase ."('AIM', 'user_aim', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
-    db_query($query);
-    
-    $query = $querybase ."('icq', 'user_icq', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
-    db_query($query);
-    
-    $query = $querybase ."('Website', 'user_website', '', 'Contact', '', 'url', 0, 0, 1, 2, '')";
+    $query = $querybase . "('AIM', 'user_aim', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
     db_query($query);
 
-    $query = $querybase ."('Location', 'user_from', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
+    $query = $querybase . "('icq', 'user_icq', '', 'Contact', '', 'textfield', 0, 0, 1, 2, '')";
     db_query($query);
 
-    $query = $querybase ."('Occupation', 'user_occ', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
+    $query = $querybase . "('Website', 'user_website', '', 'Contact', '', 'url', 0, 0, 1, 2, '')";
     db_query($query);
 
-    $query = $querybase ."('Interests', 'user_interests', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
+    $query = $querybase . "('Location', 'user_from', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
+    db_query($query);
+
+    $query = $querybase . "('Occupation', 'user_occ', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
+    db_query($query);
+
+    $query = $querybase . "('Interests', 'user_interests', '', 'Personal', '', 'textfield', 0, 0, 1, 2, '')";
     db_query($query);
 
     variable_set('phpbb2drupal_import_user_started', 1);
@@ -327,14 +327,14 @@ function phpbb2drupal_import_users() {
   $user_count = db_result(db_query('SELECT COUNT(*) FROM %susers WHERE user_id > 2', $pre));
 
   if (!$user_count) {
-      drupal_set_message(t('There were no users found: Aborting script'), 'error');
-      return t('There were no users found: Aborting script.');
+    drupal_set_message(t('There were no users found: Aborting script'), 'error');
+    return t('There were no users found: Aborting script.');
   }
 
   drupal_set_message(t('Found %user_count users: Beginning Import', array('%user_count' => $user_count + 1)));
-  
+
   $import_spammers = variable_get('phpbb2drupal_import_spammers', 1);
-  
+
   while ($result = db_fetch_object($user_ids)) {
 
     db_set_active('phpbb');
@@ -343,60 +343,60 @@ function phpbb2drupal_import_users() {
     // If we don't want to import users who have never posted, break this while loop here.
     if ($import_spammers == 1 || $user->user_posts != 0 ) {
 
-    // Make sure the user is has not already been imported
-    db_set_active('default');
-    $count = db_result(db_query('SELECT COUNT(*) FROM {phpbb2drupal_temp_user} WHERE user_id = %d', $user->user_id));
-    if ($count > 0) {
+      // Make sure the user is has not already been imported
+      db_set_active('default');
+      $count = db_result(db_query('SELECT COUNT(*) FROM {phpbb2drupal_temp_user} WHERE user_id = %d', $user->user_id));
+      if ($count > 0) {
         $user->user_active = 0;
-    }
+      }
 
-    $user->user_aim = strtr($user->user_aim, array('+' => ' ')); # PHPBB stores spaces as +, replace with ' '
-    $user->user_yim = strtr($user->user_yim, array('+' => ' '));
-    $user->user_timezone = $user->user_timezone * 60 * 60;  # Drupal stores timezones in seconds
+      $user->user_aim = strtr($user->user_aim, array('+' => ' ')); # PHPBB stores spaces as +, replace with ' '
+      $user->user_yim = strtr($user->user_yim, array('+' => ' '));
+      $user->user_timezone = $user->user_timezone * 60 * 60; # Drupal stores timezones in seconds
 
-    // if the $user->user_avatar_type is not their own image, delete it
-    // drupal doesn't have pre-defined avatars.   if we were to import it
-    // then multiple people would share the same avatar image and if one user 
-    // were to changes their avatar then it would change it for everybody else.
-    if ($user->user_avatar_type > 1) {
+      // if the $user->user_avatar_type is not their own image, delete it
+      // drupal doesn't have pre-defined avatars.   if we were to import it
+      // then multiple people would share the same avatar image and if one user
+      // were to changes their avatar then it would change it for everybody else.
+      if ($user->user_avatar_type > 1) {
         $user->user_avatar = '';
-    }
+      }
 
-    $user->user_avatar = ($user->user_avatar) ? "$files_path/$pictures_path/$user->user_avatar" : '';
+      $user->user_avatar = ($user->user_avatar) ? "$files_path/$pictures_path/$user->user_avatar" : '';
 
-    // remove the :bbcode_uid from signature
-    if(!empty($user->user_sig_bbcode_uid)) {
-      $user->user_sig = preg_replace("/:$user->user_sig_bbcode_uid/", '', $user->user_sig);
-    }
-    $signature = _phpbb2drupal_strip_bbcode($user->user_sig);
-    $signature = _phpbb2drupal_text_sanitise($signature);
-    
-    // Signatures for Forums module supports longer values than default 255 chars
-    // http://drupal.org/project/signature_forum0
-    if(!module_exists('signature_forum')) {
-      $signature = substr($signature, 0, 255);
-    }
-    
-    if (variable_get('phpbb2drupal_regdate_us_english', 0)) {
-      $user_regdate = strtotime($user->user_regdate);
-      $user_lastvisit = strtotime($user->user_lastvisit);
-      $user_session_time = strtotime($user->user_session_time);
-    }
-    else {
-      $user_regdate = $user->user_regdate;
-      $user_lastvisit = $user->user_lastvisit;
-      $user_session_time = $user->user_session_time;
-    }
-    
-    //phpbb3 stores user status in user_type instead of user_active as phpbb2 did. inactive users get an id of 1. there are other status too, no idea what they mean.
-    //KISS - user_type of 1 = inactive. The rest mean active.
-    //further complication - duplicate check sets $user->user_active to 0 if the user is a duplicate.
-    //Assume the only time the $user->user_active is set before now is in duplicate check and nothing is taken from database - so php isset() should work.
-    if ($user->user_type <> 1 && !(isset($user->user_active))) {
-      $user->user_active = 1;
-    }
+      // remove the :bbcode_uid from signature
+      if (!empty($user->user_sig_bbcode_uid)) {
+        $user->user_sig = preg_replace("/:$user->user_sig_bbcode_uid/", '', $user->user_sig);
+      }
+      $signature = _phpbb2drupal_strip_bbcode($user->user_sig);
+      $signature = _phpbb2drupal_text_sanitise($signature);
 
-    $data = array(
+      // Signatures for Forums module supports longer values than default 255 chars
+      // http://drupal.org/project/signature_forum0
+      if (!module_exists('signature_forum')) {
+        $signature = substr($signature, 0, 255);
+      }
+
+      if (variable_get('phpbb2drupal_regdate_us_english', 0)) {
+        $user_regdate = strtotime($user->user_regdate);
+        $user_lastvisit = strtotime($user->user_lastvisit);
+        $user_session_time = strtotime($user->user_session_time);
+      }
+      else {
+        $user_regdate = $user->user_regdate;
+        $user_lastvisit = $user->user_lastvisit;
+        $user_session_time = $user->user_session_time;
+      }
+
+      //phpbb3 stores user status in user_type instead of user_active as phpbb2 did. inactive users get an id of 1. there are other status too, no idea what they mean.
+      //KISS - user_type of 1 = inactive. The rest mean active.
+      //further complication - duplicate check sets $user->user_active to 0 if the user is a duplicate.
+      //Assume the only time the $user->user_active is set before now is in duplicate check and nothing is taken from database - so php isset() should work.
+      if ($user->user_type <> 1 && !(isset($user->user_active))) {
+        $user->user_active = 1;
+      }
+
+      $data = array(
       'name' => substr($user->username, 0, 60),
       'pass' => $user->user_password,
       'mail' => substr($user->user_email, 0, 64),
@@ -407,7 +407,7 @@ function phpbb2drupal_import_users() {
       'access' => $user_lastvisit,
       'login' => $user_lastvisit,
       'status' => $user->user_active,
-      'timezone' => $user->user_timezone, 
+      'timezone' => $user->user_timezone,
       'picture' => $user->user_avatar,
       'init' => substr($user->user_email, 0, 64),
       'roles' => array(0 => 2),                       # Authenticated User
@@ -420,20 +420,20 @@ function phpbb2drupal_import_users() {
       'user_occ' => $user->user_occ,
       'user_interests' => $user->user_interest
       );
-    if (variable_get('phpbb2drupal_import_pm', 0)) {
-      $data['privatemsg_allow'] = 1;
-    }
-    
-    $data['interests'] = _phpbb2drupal_text_sanitise($data['interests']);
+      if (variable_get('phpbb2drupal_import_pm', 0)) {
+        $data['privatemsg_allow'] = 1;
+      }
 
-    db_set_active('default');
-    $drupal_user = phpbb2drupal_user_save($data, array('account', 'Personal', 'Contact'));
+      $data['interests'] = _phpbb2drupal_text_sanitise($data['interests']);
 
-    // populate the temporary user table
-    db_set_active('default');
-    db_query('INSERT INTO {phpbb2drupal_temp_user} (user_id, uid) VALUES ( %d, %d )', $user->user_id , $drupal_user->uid);
+      db_set_active('default');
+      $drupal_user = phpbb2drupal_user_save($data, array('account', 'Personal', 'Contact'));
 
-    db_set_active('phpbb');
+      // populate the temporary user table
+      db_set_active('default');
+      db_query('INSERT INTO {phpbb2drupal_temp_user} (user_id, uid) VALUES ( %d, %d )', $user->user_id, $drupal_user->uid);
+
+      db_set_active('phpbb');
     }
   }
 
@@ -456,7 +456,7 @@ function phpbb2drupal_import_categories() {
   if (variable_get('phpbb2drupal_import_category_successful', 0)) {
     drupal_set_message(t('Categories already imported successfully'));
     return;
-  }    
+  }
 
   // Retrieve the vocabulary vid named "Forum".
   $forum_vid = variable_get('forum_nav_vocabulary', 0);
@@ -483,7 +483,7 @@ function phpbb2drupal_import_categories() {
       $forum['description'] = _phpbb2drupal_text_sanitise($forum['description']);
 
       taxonomy_save_term($forum);
-        
+
       // serialize the forum containers
       if ($result->forum_type == 0) {
         //This is a category
@@ -494,7 +494,7 @@ function phpbb2drupal_import_categories() {
       //save the container to the forum table - yes this is hackish.
       db_query('INSERT INTO {phpbb2drupal_temp_forum} (forum_id, tid) VALUES (%d, %d)', $result->forum_id, $forum['tid']);
     }
-  db_set_active('phpbb');
+    db_set_active('phpbb');
   }
   db_set_active('default');
   // set the forums import successful flag in the variable table
@@ -530,42 +530,42 @@ function phpbb2drupal_import_topics() {
   $counter = 0;
   db_set_active('phpbb');
   while ($result = db_fetch_object($topic_ids)) {
-      
+
     // check if this topic has been imported already just to be sure
     db_set_active('default');
     $count = db_result(db_query('SELECT count(*) FROM {phpbb2drupal_temp_topic} WHERE topic_id = %d', $result->topic_id));
     if ($count > 0) {
       db_set_active('phpbb');
       continue;
-    } 
+    }
 
     db_set_active('phpbb');
 
     $query = db_query('SELECT *
       FROM %stopics t
       INNER JOIN %sposts p ON t.topic_id = p.topic_id WHERE p.post_id = t.topic_first_post_id
-      AND t.topic_id = %d',$pre, $pre, $result->topic_id);
+      AND t.topic_id = %d', $pre, $pre, $result->topic_id);
 
     $querycount = db_query('SELECT COUNT(*)
       FROM %stopics t
       INNER JOIN %sposts p ON t.topic_id = p.topic_id WHERE p.post_id = t.topic_first_post_id
-      AND t.topic_id = %d',$pre, $pre, $result->topic_id);
+      AND t.topic_id = %d', $pre, $pre, $result->topic_id);
 
-      
+
     // check if the topic is a valid topic.  if not, continue on
     if (db_result($querycount)) {
-        $topic = db_fetch_object($query);
+      $topic = db_fetch_object($query);
     }
     else {
-      drupal_set_message(t('Could not find post details of topic: %topic_id', array('%topic_id' => $result->topic_id)));    
+      drupal_set_message(t('Could not find post details of topic: %topic_id', array('%topic_id' => $result->topic_id)));
       continue;
     }
-    
+
     db_set_active('default');
     $uid = db_result(db_query('SELECT uid FROM {phpbb2drupal_temp_user} WHERE user_id = %d', $topic->topic_poster));
     $tid = db_result(db_query('SELECT tid FROM {phpbb2drupal_temp_forum} WHERE forum_id = %d', $topic->forum_id));
 
-    if ($topic->topic_poster == 2) {   // is the admin
+    if ($topic->topic_poster == 2) { // is the admin
       $user = user_load(array('name' => variable_get('phpbb2drupal_admin_user', '')));
       $uid = $user->uid;
     }
@@ -574,12 +574,12 @@ function phpbb2drupal_import_topics() {
     }
 
     if ($topic->topic_type == 1) {
-      $sticky = 1;      // sticky
+      $sticky = 1; // sticky
       $promote = 0;
     }
     else if ($topic->topic_type == 2) {
       $sticky = 1;
-      $promote = 0;     // display on the front page, i.e. promote
+      $promote = 0; // display on the front page, i.e. promote
     }
     else {
       $sticky = 0;
@@ -587,14 +587,14 @@ function phpbb2drupal_import_topics() {
     }
 
     if ($topic->topic_status == 1) { // LOCKED
-      $comment = 1;  // read-only
+      $comment = 1; // read-only
     }
     else { // UNLOCKED & WATCH NOTIFIED
-      $comment = 2;  // read-write
+      $comment = 2; // read-write
     }
 
     // remove the bbcode_uid from post_text
-    if(!empty($topic->bbcode_uid)) {
+    if (!empty($topic->bbcode_uid)) {
       $topic->post_text = preg_replace("/:$topic->bbcode_uid/", '', $topic->post_text);
     }
     $topic->post_text = _phpbb2drupal_strip_bbcode($topic->post_text);
@@ -630,13 +630,13 @@ function phpbb2drupal_import_topics() {
       db_set_active('default');
       $moved_tid = db_result(db_query('SELECT tid FROM {phpbb2drupal_temp_forum} WHERE forum_id = %d', $forum_id));
 
-      $node['tid'] = $moved_tid;        // which forum it used to be part of
+      $node['tid'] = $moved_tid; // which forum it used to be part of
     }
     else {
       $node['tid'] = $tid;
     }
 
-    $node = (object)$node; // node_save requires an object form
+    $node = (object) $node; // node_save requires an object form
 
     db_set_active('default');
     node_save($node);
@@ -697,7 +697,7 @@ function phpbb2drupal_import_posts() {
   if (variable_get('phpbb2drupal_import_post_successful', 0)) {
     drupal_set_message(t('Posts already imported successfully'));
     return;
-  }    
+  }
 
   if (!variable_get('phpbb2drupal_import_post_started', 0)) {
     db_set_active('default');
@@ -707,7 +707,7 @@ function phpbb2drupal_import_posts() {
   db_set_active('phpbb');
 
   $topic_ids = db_query('SELECT topic_id, topic_first_post_id, topic_last_post_id
-    FROM %stopics 
+    FROM %stopics
     WHERE topic_replies > 0
     ORDER BY topic_id', $pre);
 
@@ -764,18 +764,18 @@ function phpbb2drupal_import_posts() {
 
       $pid = (is_null($pid)) ? 0 : $pid;
 
-      if ($post->poster_id == 2) {   // is the admin
+      if ($post->poster_id == 2) { // is the admin
         $user = user_load(array('name' => variable_get('phpbb2drupal_admin_user', '')));
         $uid = $user->uid;
       }
       else if ($post->poster_id == -1) { // anonymous
-        $uid = 0; 
-      }    
+        $uid = 0;
+      }
 
       $hostname = phpbb2drupal_decode_ip($post->poster_ip);
 
       // remove the :bbcode_uid from post_text
-      if(!empty($post->bbcode_uid)) {
+      if (!empty($post->bbcode_uid)) {
         $post->post_text = preg_replace("/:$post->bbcode_uid/", '', $post->post_text);
       }
       $post->post_text = _phpbb2drupal_strip_bbcode($post->post_text);
@@ -806,7 +806,7 @@ function phpbb2drupal_import_posts() {
         $errors++;
         drupal_set_message(t('Failed importing %post_id', array('%post_id' => $post->post_id)));
       }
-            
+
       // Handle attachments
       if ($PHPBB2DRUPAL_IMPORT_ATTACHMENTS) {
         if ($post->post_attachment == 1) {
@@ -823,7 +823,7 @@ function phpbb2drupal_import_posts() {
             $fid = db_last_insert_id('files', 'fid');
             db_query("INSERT INTO {comment_upload} (fid, nid, cid, description, list, weight) VALUES (%d, %d, %d, '%s', %d, %d)", $fid, $nid, $cid, substr($file->real_filename, 0, 255), 1, $file->attach_id);
             db_set_active('phpbb');
-          }        
+          }
         }
       }
 
@@ -849,7 +849,7 @@ function phpbb2drupal_import_cleanup() {
   $pre = variable_get('phpbb2drupal_table_prefix', 'phpbb_');
 
   #
-  # Update Drupal sequence 
+  # Update Drupal sequence
   #
   db_set_active('default');
   $term_data_tid = db_result(db_query('SELECT MAX(tid) FROM {term_data}'));
@@ -875,7 +875,7 @@ function phpbb2drupal_import_cleanup() {
     db_query("DELETE FROM {sequences} WHERE name='files_fid'");
     db_query("INSERT INTO {sequences} (name,id) VALUES ('files_fid', '%s')", $files_fid);
   }
-  
+
   variable_del('phpbb2drupal_import_user_successful');
   variable_del('phpbb2drupal_import_user_started');
   variable_del('phpbb2drupal_import_category_successful');
@@ -895,7 +895,7 @@ function phpbb2drupal_import_cleanup() {
   variable_del('phpbb2drupal_time_limit');
   variable_del('phpbb2drupal_import_spammers');
   variable_del('phpbb2drupal_import_attachments');
-  variable_del('phpbb2drupal_import_polls'); 
+  variable_del('phpbb2drupal_import_polls');
   variable_del('phpbb2drupal_import_poll_started');
   variable_del('phpbb2drupal_import_poll_successful');
   variable_del('phpbb2drupal_import_pm_successful');
@@ -915,23 +915,23 @@ function phpbb2drupal_user_save($phpbb_user, $category = array()) {
 
   if (!($user = user_load(array('name' => $phpbb_user['name'])))) {
     $account = new stdClass();
-    $account->uid = FALSE; 
+    $account->uid = FALSE;
     $user = user_save($account, $phpbb_user);
-    //Drupal overrides the phpBB user registration date when creating a Drupal account. 
+    //Drupal overrides the phpBB user registration date when creating a Drupal account.
     //so we need to update it here.
     $user = user_save($user, array('created' => $phpbb_user['created']));
-    
+
     if ($phpbb_user['pass'] && strlen($phpbb_user['pass']) <> 32 && substr($phpbb_user['pass'], 0, 2) == '$H') {
       // Update the password:import the phpass hash into Drupal phpass mopdule table after modifying the hash identifier - phpbb3 uses $H$ while phpass uses $P$ at the start of every phpass hash
       // set the normal password as plain 'phpass'. This is needed for the phpass module as it uses the count of passwords as 'phpass' when calculatign wether or not to allow the module to be deactivated.
-      $hash = substr_replace($phpbb_user['pass'],'$P', 0, 2);
+      $hash = substr_replace($phpbb_user['pass'], '$P', 0, 2);
       $result = db_query("UPDATE {users} SET pass = 'phpass' WHERE uid = %d", $user->uid);
       $result = db_query("INSERT INTO {user_phpass} (hash, uid) VALUES ('%s', %d)", $hash, $user->uid);
 
     }
     elseif ($phpbb_user['pass']) {
-    //The password has NOT been converted from md5 to phpass yet
-    $result = db_query("UPDATE {users} SET pass = '%s' WHERE uid = %d", $phpbb_user['pass'], $user->uid);
+      //The password has NOT been converted from md5 to phpass yet
+      $result = db_query("UPDATE {users} SET pass = '%s' WHERE uid = %d", $phpbb_user['pass'], $user->uid);
     }
   }
   $phpbb_user['uid'] = $user->uid;
@@ -954,7 +954,7 @@ function phpbb2drupal_profile_save_profile(&$edit, &$user, $category) {
     // Mark field as handled (prevents saving to user->data).
     $edit[$field->name] = NULL;
   }
-} 
+}
 
 function phpbb2drupal_comment_save($edit) {
   db_set_active('default');
@@ -967,7 +967,7 @@ function phpbb2drupal_comment_save($edit) {
 
     // Strip the "/" from the end of the thread.
     $max = rtrim($max, '/');
-    $thread = int2vancode(vancode2int($max)+1) .'/';
+    $thread = int2vancode(vancode2int($max) + 1) . '/';
 
   }
   else {
@@ -985,7 +985,7 @@ function phpbb2drupal_comment_save($edit) {
 
     if ($max == '') {
       // First child of this parent.
-      $thread = $parent->thread .'.'. int2vancode(1) .'/';
+      $thread = $parent->thread . '.' . int2vancode(1) . '/';
     }
     else {
       // Strip the "/" at the end of the thread.
@@ -997,15 +997,15 @@ function phpbb2drupal_comment_save($edit) {
       $last = $parts[$parent_depth];
 
       // Finally, build the thread field for this new comment.
-      $thread = $parent->thread .'.'. int2vancode(vancode2int($last) + 1) .'/';
-    } 
+      $thread = $parent->thread . '.' . int2vancode(vancode2int($last) + 1) . '/';
+    }
   }
 
-  $status = 0;                        // 1 - not published, 0 - published
+  $status = 0; // 1 - not published, 0 - published
   $format = variable_get('phpbb2drupal_input_format', 0);
-  $score = 0;                         // 0 default value, comments get higher score depending on the author's roles
-  $users = serialize(array(0 => 1));  // default value for everybody!!
-  
+  $score = 0; // 0 default value, comments get higher score depending on the author's roles
+  $users = serialize(array(0 => 1)); // default value for everybody!!
+
   if ($edit['uid'] === $user->uid) { // '===' because we want to modify anonymous users too
     $edit['name'] = $user->name;
   }
@@ -1022,7 +1022,7 @@ function phpbb2drupal_comment_save($edit) {
  */
 function phpbb2drupal_decode_ip($int_ip) {
   $hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
-  return hexdec($hexipbang[0]) .'.'. hexdec($hexipbang[1]) .'.'. hexdec($hexipbang[2]) .'.'. hexdec($hexipbang[3]);
+  return hexdec($hexipbang[0]) . '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
 /**
@@ -1044,7 +1044,7 @@ function _phpbb2drupal_strip_bbcode($text) {
   // If bbcode conversion to has been selected, the following will convert the bbcode to normal html.
   if (variable_get('phpbb2drupal_bbcode', 0)) {
     $input_format = variable_get('phpbb2drupal_input_format', 0);
-    $text = bbcode_filter('process', 0 , $input_format, $text);
+    $text = bbcode_filter('process', 0, $input_format, $text);
   }
   return $text;
 }
@@ -1061,21 +1061,21 @@ function _phpbb2drupal_text_sanitise($text) {
 function _phpbb2drupal_replace_links_topic($matches) {
   //print_r($matches);
   $result = db_result(db_query('SELECT nid FROM {phpbb2drupal_temp_topic} WHERE topic_id = %d', $matches[1]));
-  $link = 'node/'. $result . $matches[2];
+  $link = 'node/' . $result . $matches[2];
   return $link;
 }
 
 function _phpbb2drupal_replace_links_post($matches) {
   //print_r($matches);
   $result = db_fetch_object(db_query('SELECT c.cid, c.nid FROM {phpbb2drupal_temp_post} p JOIN {comments} c ON c.cid = p.cid WHERE post_id = %d', $matches[1]));
-  $link = 'node/'. $result->nid .'#comment-'. $result->cid . $matches[3];
+  $link = 'node/' . $result->nid . '#comment-' . $result->cid . $matches[3];
   return $link;
 }
 
 function _phpbb2drupal_replace_links_forum($matches) {
   //print_r($matches);
   $result = db_fetch_object(db_query('SELECT tid FROM {phpbb2drupal_temp_forum} WHERE forum_id = %d', $matches[1]));
-  $link = 'forum/'. $result->tid . $matches[2] ;
+  $link = 'forum/' . $result->tid . $matches[2];
   return $link;
 }
 
@@ -1100,7 +1100,7 @@ function _phpbb2drupal_replace_links($html) {
  */
 function phpbb2drupal_replace_url() {
   db_set_active('default');
-  
+
   // transform nodes:
   // As the topics have just been imported, there is only one vid for each nid,
   // so the query works as it is.
