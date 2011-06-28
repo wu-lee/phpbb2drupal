@@ -1,4 +1,5 @@
 <?php
+// $Id: phpbb2drupal.pages.inc,v 1.12 2009/06/30 01:31:33 nbz Exp $
 
 /**
  * Callback admin/settings/phpbb2drupal

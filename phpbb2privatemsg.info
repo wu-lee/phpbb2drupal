@@ -1,6 +1,13 @@
+; $Id: phpbb2privatemsg.info,v 1.2 2008/02/10 23:34:51 nbz Exp $
 name = phpBB2Privatemsg
 description = "Migrate your phpBB private messages to Drupal privatemsg."
 core = 6.x
 dependencies[] = privatemsg
 dependencies[] = phpbb2drupal
 package = phpBB to Drupal
+; Information added by drupal.org packaging script on 2009-11-08
+version = "6.x-2.1"
+core = "6.x"
+project = "phpbb2drupal"
+datestamp = "1257699044"
+
