@@ -1,5 +1,4 @@
 <?php
-// $Id: phpbb2privatemsg.install,v 1.1 2009/05/17 02:01:56 nbz Exp $
 /**
  * @file
  * Install, update and uninstall functions for the phpbb2drupal module.

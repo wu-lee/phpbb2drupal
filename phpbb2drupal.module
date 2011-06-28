@@ -1,5 +1,4 @@
 <?php
-// ; $Id: phpbb2drupal.module,v 1.107 2009/10/03 18:02:13 nbz Exp $
 
 /**
  * Implements hook_menu().
