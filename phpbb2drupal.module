@@ -699,24 +699,59 @@ function phpbb2drupal_import_topics() {
         $file_path = variable_get('file_directory_path', 'files');
 
         db_set_active('phpbb');
-        $files = db_query('SELECT * FROM %sattachments a WHERE a.post_msg_id = %d',
-          $pre, $topic->topic_first_post_id);
+        $files = db_query('SELECT * FROM %sattachments a WHERE a.post_msg_id = :a.post_msg_id', array(':a.post_msg_id' => $pre, '' => $topic->topic_first_post_id));
 
         while ($file = db_fetch_object($files)) {
           db_set_active('default');
-          db_query("INSERT INTO {files} (uid, filename, filepath, filemime, filesize, status, timestamp) VALUES (%d, '%s', '%s', '%s', %d, %d, %d)", $uid, substr($file->real_filename, 0, 255), substr("$file_path/$file->physical_filename", 0, 255), substr($file->mimetype, 0, 255), $file->filesize, 1, $file->filetime);
+	  // TODO Please review the conversion of this statement to the D7 database API syntax.
+	  /* db_query("INSERT INTO {files} (uid, filename, filepath, filemime, filesize, status, timestamp) VALUES (%d, '%s', '%s', '%s', %d, %d, %d)", $uid, substr($file->real_filename, 0, 255), substr( $file_path $file->physical_filename, 0, 255), substr($file->mimetype, 0, 255), $file->filesize, 1, $file->filetime) */
+	  $id = db_insert('files')->fields(array(
+	    'uid' => $uid,
+	    'filename' => substr($file->real_filename, 0, 255),
+	    'filepath' => substr( $file_path $file->physical_filename, 0, 255),
+	    'filemime' => substr($file->mimetype, 0, 255),
+	    'filesize' => $file->filesize,
+	    'status' => 1,
+	    'timestamp' => $file->filetime,
+	  ))->execute();
           $fid = db_last_insert_id('files', 'fid');
-          db_query("INSERT INTO {upload} (fid, nid, vid, description, list, weight) VALUES (%d, %d, %d, '%s', %d, %d)", $fid, $node->nid, $node->vid, substr($file->real_filename, 0, 255), 1, $file->attach_id);
+	  // TODO Please review the conversion of this statement to the D7 database API syntax.
+	  /* db_query("INSERT INTO {upload} (fid, nid, vid, description, list, weight) VALUES (%d, %d, %d, '%s', %d, %d)", $fid, $node->nid, $node->nid, substr($file->real_filename, 0, 255), 1, $file->attach_id) */
+	  $id = db_insert('upload')
+  ->fields(array(
+	    'fid' => $fid,
+	    'nid' => $node->nid,
+	    'vid' => $node->nid,
+	    'description' => substr($file->real_filename, 0, 255),
+	    'list' => 1,
+	    'weight' => $file->attach_id,
+	  ))
+  ->execute();
           db_set_active('phpbb');
         }
       }
     }
 
     db_set_active('default');
-    db_query('INSERT INTO {phpbb2drupal_temp_topic} (topic_id, post_id, nid) VALUES (%d, %d, %d)', $topic->topic_id, $topic->post_id, $node->nid);
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('INSERT INTO {phpbb2drupal_temp_topic} (topic_id, post_id, nid) VALUES (%d, %d, %d)', $topic->topic_id, $topic->post_id, $node->nid) */
+    $id = db_insert('phpbb2drupal_temp_topic')
+  ->fields(array(
+      'topic_id' => $topic->topic_id,
+      'post_id' => $topic->post_id,
+      'nid' => $node->nid,
+    ))
+  ->execute();
 
     //hack to keep the topics in correct order
-    db_query('UPDATE {node_comment_statistics} SET last_comment_timestamp = %d WHERE nid = %d', $node->created, $node->nid);
+    // TODO Please review the conversion of this statement to the D7 database API syntax.
+    /* db_query('UPDATE {node_comment_statistics} SET last_comment_timestamp = %d WHERE nid = %d', $node->created, $node->nid) */
+    db_update('node_comment_statistics')
+  ->fields(array(
+      'last_comment_timestamp' => $node->created,
+    ))
+  ->condition('nid', $node->nid)
+  ->execute();
 
     db_set_active('phpbb');
   }
