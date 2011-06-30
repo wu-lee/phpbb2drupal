@@ -345,9 +345,6 @@ function phpbb2drupal_main() {
   $output .= t('You may want to <a href="http://drupal.org/node/58199" target="_blank">check the documentation</a> before starting.');
   $output .= '</li>';
   $output .= '<li>';
-  $output .= t('phpass.module by default changes hashing for all users from md5 to phpass. If you do not want this, please select md5 as the password hash method on the <a href="@phpass">User Settings page</a>. This will not affect user import from phpbb as this module ignores that page.', array('@phpass' => url('admin/user/settings')));
-  $output .= '</li>';
-  $output .= '<li>';
   $output .= l(t('Configure the migration'), 'admin/config/phpbb2drupal');
   $output .= '</li>';
   $output .= '<li>';
