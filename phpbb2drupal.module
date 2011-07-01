@@ -655,7 +655,7 @@ function phpbb2drupal_import_topics() {
       'type' => 'forum',
       'title' => $topic->topic_title,
       'uid' => $uid,
-      'status' => 1,  // published or not - always publish
+      'status' => NODE_PUBLISHED,  // published or not - always publish
       'promote' => $promote,
       'created' => $topic->topic_time,
       'changed' => $topic->post_edit_time,
