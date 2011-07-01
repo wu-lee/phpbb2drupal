@@ -15,7 +15,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
    6. [X] The hook_menu() and hook_theme() "file" and "file path" keys have been removed
    7. [X] New permission tables
    8. [X] Use '#markup' not '#value' for markup
-   9. [ ] Comment status values in the database have flipped so they match node status
+   9. [X] Comment status values in the database have flipped so they match node status
   10. [ ] Rebuild functions have changed names
   11. [ ] Use defined constant REQUEST_TIME instead of time()
   12. [ ] referer_uri() has been removed
