@@ -19,7 +19,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
   10. [X] Rebuild functions have changed names
   11. [X] Use defined constant REQUEST_TIME instead of time()
   12. [X] referer_uri() has been removed
-  13. [ ] Some #process functions have been renamed
+  13. [X] Some #process functions have been renamed
   14. [ ] A completely new database API has been added
   15. [ ] file_validate_extensions() enforces check for uid=1
   16. [ ] file_scan_directory() and drupal_system_listing() use preg regular expressions
