@@ -8,7 +8,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
 * UNSTABLE-1 (2008-Sep-30)
 
    1. [X] Drupal 7 requires PHP 5.2 or higher
-   2. [ ] Permissions have titles (required) and descriptions (optional)
+   2. [X] Permissions have titles (required) and descriptions (optional)
    3. [ ] Permissions are no longer sorted alphabetically
    4. [ ] _comment_load() is now comment_load()
    5. [ ] Module .info files must now specify all loadable code files explicitly
