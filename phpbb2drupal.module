@@ -1174,11 +1174,6 @@ function phpbb2drupal_comment_save($edit) {
     }
   }
 
-  $status = 0; // 1 - not published, 0 - published
-  $format = variable_get('phpbb2drupal_input_format', 0);
-  $score = 0; // 0 default value, comments get higher score depending on the author's roles
-  $users = serialize(array(0 => 1)); // default value for everybody!!
-
   if ($edit['uid'] === $user->uid) { // '===' because we want to modify anonymous users too
     $edit['name'] = $user->name;
   }
