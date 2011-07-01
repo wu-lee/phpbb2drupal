@@ -11,7 +11,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
    2. [X] Permissions have titles (required) and descriptions (optional)
    3. [X] Permissions are no longer sorted alphabetically
    4. [X] _comment_load() is now comment_load()
-   5. [ ] Module .info files must now specify all loadable code files explicitly
+   5. [X] Module .info files must now specify all loadable code files explicitly
    6. [ ] The hook_menu() and hook_theme() "file" and "file path" keys have been removed
    7. [ ] New permission tables
    8. [ ] Use '#markup' not '#value' for markup
