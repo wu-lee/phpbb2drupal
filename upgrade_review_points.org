@@ -9,7 +9,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
 
    1. [X] Drupal 7 requires PHP 5.2 or higher
    2. [X] Permissions have titles (required) and descriptions (optional)
-   3. [ ] Permissions are no longer sorted alphabetically
+   3. [X] Permissions are no longer sorted alphabetically
    4. [ ] _comment_load() is now comment_load()
    5. [ ] Module .info files must now specify all loadable code files explicitly
    6. [ ] The hook_menu() and hook_theme() "file" and "file path" keys have been removed
