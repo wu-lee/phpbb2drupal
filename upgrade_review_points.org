@@ -16,7 +16,7 @@ Copied from http://drupal.org/update/modules/6/7 on 30/6/2011
    7. [X] New permission tables
    8. [X] Use '#markup' not '#value' for markup
    9. [X] Comment status values in the database have flipped so they match node status
-  10. [ ] Rebuild functions have changed names
+  10. [X] Rebuild functions have changed names
   11. [ ] Use defined constant REQUEST_TIME instead of time()
   12. [ ] referer_uri() has been removed
   13. [ ] Some #process functions have been renamed
