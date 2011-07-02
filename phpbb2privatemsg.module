@@ -26,6 +26,9 @@ function phpbb2privatemsg_menu() {
  * Callback admin/phpbb2drupal
  */
 function phpbb2privatemsg_main() {
+  $output = '<h2>';
+  $output .= t('Import Private Messages');
+  $output .= '</h2>';
   $output .= '<p>';
   $output .= t('This module imports private messages from phpBB to Drupal. It uses settings and data from the main phpbb2drupal module. Before importing Private Messages, you must:');
   $output .= '</p>';
@@ -40,7 +43,7 @@ function phpbb2privatemsg_main() {
   $output .= '</p>';
 
   if (!variable_get('phpbb2drupal_ready', 0)) {
-    return '<p>' . t('the phpBB2Drupal settings. Please <a href="@settings">complete the setup first</a>', array('@settings' => url('admin/config/phpbb2drupal'))) . '</p>';
+    return '<p>' .  t('The phpBB2Drupal configuration is not yet ready - please <a href="@settings">complete that first</a>', array('@settings' => url('admin/config/phpbb2drupal'))) . '</p>';
   }
   if (variable_get('phpbb2privatemsg_import_successful', 0) == 1) {
     return t('Private Messages have already been imported. You can now <a href="@cleanup">clean up</a> any variables set by this module and deactivate/uninstall it.', array('@cleanup' => url('admin/phpbb2privatemsg/cleanup')));
