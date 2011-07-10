@@ -1,0 +1,10 @@
+name = phpBB_Redirect
+description = Redirects links incoming from old phpBB forum to the new Drupal forum. 
+core = 7.x
+package = phpBB to Drupal
+
+files[] = phpbb2drupal.install
+files[] = phpbb2drupal.module
+files[] = phpbb2drupal.pages.inc
+files[] = phpbb2privatemsg.module
+files[] = phpbb_redirect.module

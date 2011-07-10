@@ -1,0 +1,127 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the phpbb2drupal module.
+ *
+ */
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function phpbb2drupal_schema() {
+  $schema['phpbb2drupal_temp_forum'] = array(
+    'description' => 'Maps phpBB forum forum_id to Drupal taxonomy tid.',
+    'fields' => array(
+      'forum_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '5',
+      ),
+      'tid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '10',
+      ),
+    ),
+    'primary key' => array('forum_id'),
+  );
+
+  $schema['phpbb2drupal_temp_post'] = array(
+    'description' => 'Maps phpBB posts to Drupal comments.',
+    'fields' => array(
+      'post_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '8',
+      ),
+      'cid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '10',
+      ),
+    ),
+    'primary key' => array('post_id'),
+  );
+
+  $schema['phpbb2drupal_temp_topic'] = array(
+    'description' => 'Maps phpBB topics and polls to Drupal Nodes.',
+    'fields' => array(
+      'topic_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '8',
+      ),
+      'post_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '8',
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '10',
+      ),
+    ),
+    'primary key' => array('topic_id'),
+  );
+
+  $schema['phpbb2drupal_temp_user'] = array(
+    'description' => 'Maps phpBB  User (User_id) to Drupal User (uid).',
+    'fields' => array(
+      'user_id' => array(
+        'type' => 'int',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '8',
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'disp-width' => '10',
+      ),
+    ),
+    'primary key' => array('user_id'),
+  );
+  return $schema;
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function phpbb2drupal_install() {
+  // Create tables.
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_install_schema('phpbb2drupal')
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function phpbb2drupal_uninstall() {
+  // Drop tables.
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('phpbb2drupal')
+}
